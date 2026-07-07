@@ -219,6 +219,12 @@ class RobotScene(Scene):
         pos.append(bottom_left)
         pos.append(bottom_right)
 
+        romega = MathTex(r"||v||=r\omega", font_size=50).shift(UP*2.5)
+
+        dir = MathTex("direction", "=", r"\ ?", font_size=50).shift(DOWN*2)
+
+        r_vector = MathTex(r"r=\left\langle r_x,r_y \right\rangle", font_size=60).shift(RIGHT*2)
+
         for i in range(len(pos)):
             mod = Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to(pos[i])
 
@@ -240,6 +246,7 @@ class RobotScene(Scene):
         full_chassis = VGroup(chassis, Dot(chassis.get_center(), radius=0.05, color=BLACK))
 
         self.add_sound("voiceovers/in depth vid 18.m4a")
+        
         self.play(Create(full_chassis))
 
         self.play(*[Create(module) for module in modules], run_time=0.3)
@@ -261,21 +268,34 @@ class RobotScene(Scene):
         self.play(Write(r))
 
         self.wait(2.5)
-
+        
         self.play(*[Transform(mod, mod.copy().rotate(PI/4)) if index%2 == 0
                     else Transform(mod, mod.copy().rotate(-PI/4)) for index, mod in enumerate(modules)])
 
         self.play(Create(vel_vectors[0]))
    
         full_robot = VGroup(full_chassis, *modules, pos_vectors[0], r, vel_vectors[0])
-        
+
         self.play(Rotate(full_robot, 
                          angle=2*PI, 
                          about_point=chassis.get_center()),
                          rate_func=linear,
                          run_time=5)
-
+        
         self.play(Uncreate(vel_vectors[0]), run_time=0.5)
-            
-        # self.add_sound("voiceovers/in depth vid 19.m4a")
-        self.wait(3)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
+
+        self.wait(1)
+
+        self.play(Write(romega), run_time=0.7)
+
+        vec = Arrow(chassis.get_center(), top_right, stroke_width=5, buff=0, tip_length=0.5, color=ORANGE)
+
+        self.play(Create(vec))
+
+        self.play(Write(dir), Rotate(vec, angle=2*PI, about_point=chassis.get_center()), run_time=2)
+
+
+
+        self.wait(5)
