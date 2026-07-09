@@ -292,13 +292,11 @@ class RobotScene(Scene):
 
         self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
 
-        self.wait(1)
-
         full_robot.remove(vel_vectors[0])
 
-        self.add_sound("voiceovers/in depth vid 19.m4a")
+        # self.add_sound("voiceovers/in depth vid 19.m4a")
 
-        self.wait(0.8)
+        self.wait(0.6)
 
         self.play(Write(romega), run_time=0.7)
 
@@ -328,7 +326,7 @@ class RobotScene(Scene):
 
         self.wait(1.2)
 
-        self.play(r_ortho.animate.shift(UP+LEFT*2))
+        self.play(r_ortho.animate.shift(UP*1.3+LEFT*2))
 
         r_ortho_unit.move_to(r_ortho)
 
@@ -357,9 +355,9 @@ class RobotScene(Scene):
         self.play(romega.animate.next_to(r_ortho_unit[2], LEFT, buff=0.2))
 
         slash = Line([-0.5, 3.4, 0], [0, 3.0, 0],
-                     color = RED).shift(LEFT*0.8+DOWN*0.2)
+                     color = RED).shift(LEFT*0.8+UP*0.1)
         
-        slash2 = slash.copy().shift(DOWN*0.3+RIGHT*1.1)
+        slash2 = slash.copy().shift(RIGHT*1.1+DOWN*0.3)
 
         slash3 = slash2.copy().shift(RIGHT)
 
@@ -381,12 +379,43 @@ class RobotScene(Scene):
 
         v_rot = MathTex(r"v_{rot}=\left\langle -\omega r_y, \omega r_x \right\rangle", font_size=40).move_to(romega).shift(RIGHT*0.8)
 
-        self.play(FadeOut(romega), Transform(r_ortho[2], v_rot), ScaleInPlace(vec_copy, 2.5))
+        self.play(FadeOut(romega), Transform(r_ortho[2], v_rot), ScaleInPlace(vec_copy, 2.0))
 
-        v_rot_label = MathTex(r"v_{rot}", font_size=30, color=ORANGE).shift(UP*2, LEFT*0.3)
+        v_rot_label = MathTex(r"v_{rot}", font_size=30, color=ORANGE).shift(UP*1.9+LEFT*0.1)
 
-        self.play(vec_copy.animate.shift(UP*0.3+LEFT*0.3))
+        self.play(vec_copy.animate.shift(UP*0.2+LEFT*0.2))
 
         self.play(Write(v_rot_label))
 
-        self.wait(5)
+        self.wait(1.5)
+
+        v_trans = Arrow(top_right, top_right+UP*1.2+RIGHT*0.4, stroke_width=4, 
+                        tip_length=0.2, color=YELLOW, buff=0)
+        
+        v_trans_label = MathTex(r"v_{trans}", font_size=30, color=YELLOW).next_to(v_trans).shift(UP*0.5+LEFT*0.1)
+
+        self.play(Create(v_trans), Write(v_trans_label))
+
+        trans_component = v_trans.get_end() - v_trans.get_start()
+
+        rot_component = vec_copy.get_end() - vec_copy.get_start()
+
+        overall = trans_component+rot_component
+
+        v_overall = Arrow(top_right, top_right+overall, stroke_width=4,
+                          tip_length=0.2, color=GREEN, buff=0)
+        
+        v_overall_label = MathTex(r"v_{overall}", font_size=30, color=GREEN).shift(UP*2.9+RIGHT*1.3)
+        
+        self.play(Create(v_overall), Write(v_overall_label), modules[0].animate.rotate(-PI/5.5))
+
+        v_overall_eq = MathTex(r"v_{overall}=v_{trans}+v_{rot}=\left\langle v_{xr},v_{yr} \right\rangle+\left\langle -\omega r_y,\omega r_x \right\rangle=\left\langle v_{xr}-\omega r_y,v_{yr}+\omega r_x \right\rangle",
+                            font_size=35)
+
+        v_overall_eq.shift(DOWN*2.4)
+
+        self.play(Write(v_overall_eq))
+
+        self.wait(3)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
