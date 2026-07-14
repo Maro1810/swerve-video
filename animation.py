@@ -469,3 +469,26 @@ class ModuleStatesScene(Scene):
         self.wait(0.8)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+class MatrixScene(Scene):
+    def construct(self):
+        states_matrix = MathTex(r"v_{overall}= \begin{bmatrix} v_{xr}-\omega r_y\\ v_{yr}+\omega r_x\end{bmatrix}=", r"\begin{bmatrix} 1 & 0 & -r_y \\ 0 & 1 & r_x \end{bmatrix}", r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
+
+        states_matrix.shift(UP*1.5)
+        method_label = MathTex("toSwerveModuleStates()", font_size=40)
+
+        method_label.next_to(states_matrix, DOWN).shift(DOWN*1.5)
+
+        arrow = Arrow(start=[0, 3, 0], end=[0, 1.5, 0]).next_to(states_matrix, DOWN)
+        
+        self.play(Write(states_matrix), run_time=3.6)
+        self.play(Indicate(states_matrix[1]))
+
+        self.wait(0.5)
+
+        self.play(Create(arrow))
+        self.play(Write(method_label))
+
+        self.wait(1.2)
+        
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
