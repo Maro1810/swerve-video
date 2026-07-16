@@ -501,6 +501,15 @@ class OptimizationScene(Scene):
         path_1 = current_angle.copy()
         path_2 = current_angle.copy()
 
+        path_1_label = MathTex(r"75^{\circ}", color=GREEN)
+        path_2_label = MathTex(r"105^{\circ}", color=RED)
+
+        start_angle = MathTex(r"Start \ Angle = 60^{\circ}", font_size=30).shift(UP*3+LEFT*2)
+        target_angle = MathTex(r"Target \ Angle \ = 135^{\circ}", font_size=30).shift(UP*3+RIGHT*2)
+
+        arc1 = Arc(radius=2, start_angle=PI/3, angle=75*DEGREES, color=GREEN)
+        arc2 = Arc(radius=2, start_angle=PI/3, angle=-105*DEGREES, color=RED)
+
         self.play(Create(circle))
 
         self.play(Create(current_angle))
@@ -510,9 +519,100 @@ class OptimizationScene(Scene):
         path_1.set_color(GREEN)
         path_2.set_color(RED)
 
+        self.play(Write(start_angle))
+
         self.play(Create(dashed))
 
-        self.play(path_1.animate.rotate(5*PI/12, about_point=circle.get_center()), path_2.animate.rotate(-7*PI/12, about_point=circle.get_center()))
+        self.play(Write(target_angle))
+
+        self.play(
+            Rotate(path_1, angle=5*PI/12, about_point=circle.get_center(), run_time=1.5),
+            Rotate(path_2, angle=-7*PI/12, about_point=circle.get_center(), run_time=1.7),
+            Create(arc1, run_time=1.5),
+            Create(arc2, run_time=1.7)
+        ) 
+
+        path_1_label.next_to(arc1, UP)
+        path_2_label.next_to(arc2, RIGHT)
+
+        self.play(Write(path_1_label, run_time=0.8))
+        self.play(Write(path_2_label))
+
+        self.wait(1.5)
+
+        self.play(Indicate(path_2_label))
+        
+        self.wait(1.5)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+        ang_opt = Text("Angle Optimization", font_size=50).to_edge(UP)
+
+        self.play(Write(ang_opt))
+
+        current_angle = Arrow(circle.get_center(), circle.point_at_angle(PI/3), color=YELLOW, buff=0)
+
+        circle = Circle(radius=2, color=BLUE)
+
+        arc1 = Arc(radius=2, start_angle=PI/3, angle=75*DEGREES, color=GREEN)
+        arc2 = Arc(radius=2, start_angle=PI/3, angle=-105*DEGREES, color=RED)
+
+        dashed = DashedLine(circle.point_at_angle(3*PI/4), circle.point_at_angle(-PI/4), dash_length=0.3)
+
+        path_1_label = MathTex(r"75^{\circ}", color=GREEN).next_to(arc1, UP)
+        path_2_label = MathTex(r"105^{\circ}", color=RED).next_to(arc2, RIGHT)
+
+        full_group = VGroup(current_angle, circle, arc1, arc2, dashed, path_1_label, path_2_label)
+
+        full_group.shift(DOWN*0.5)
+
+        self.play(FadeIn(full_group))
+
+        circ = Circle(radius=0.5, color=YELLOW).move_to(path_1_label)
+
+        self.play(Create(circ))
 
         self.wait(3)
 
+        new_angle = Arrow(circle.get_center(), circle.get_right(), color=YELLOW, buff=0)
+
+        self.play(
+            FadeOut(full_group[0]), 
+            FadeOut(full_group[2]), 
+            FadeOut(full_group[3]), 
+            FadeOut(full_group[5]), 
+            FadeOut(full_group[6]),
+            FadeOut(circ), Create(new_angle))
+
+        self.wait(0.4)
+
+        angle_indicator = Arc(radius=0.8, start_angle=0, angle=135*DEGREES).shift(DOWN*0.5)
+
+        dashed2 = DashedLine(circle.get_center(), circle.get_right(), dash_length=0.3)
+
+        self.play(Create(dashed2, run_time=0.4))
+
+        angle_label = MathTex(r"135^{\circ}", font_size=30).next_to(angle_indicator, UP).shift(RIGHT*0.3+DOWN*0.1)
+
+        self.play(Create(angle_indicator), Write(angle_label))
+
+        self.wait(0.5)
+
+        self.play(Rotate(new_angle, angle=-45*DEGREES, about_point=circle.get_center()))
+
+        self.wait(1.6)
+
+        self.play(new_angle.animate.rotate(180*DEGREES, about_point=circle.get_center()))
+
+        self.wait(2)
+
+        self.play(FadeOut(angle_indicator), 
+                  FadeOut(dashed2), 
+                  FadeOut(new_angle),
+                  FadeOut(dashed2),
+                  FadeOut(angle_label),
+                  FadeOut(dashed))
+        
+        new_angle2 = Arrow(circle.get_center(), circle.get_right(), color=YELLOW, buff=0)
+
+        
