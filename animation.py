@@ -626,14 +626,17 @@ class OptimizationScene(Scene):
         desired = Text("Desired", font_size=30, color=GREEN)
         curr = Text("Current", font_size=30, color=YELLOW)
 
-        curr.to_edge(UP).shift(RIGHT, DOWN*1.32)
-        desired.to_edge(UP).shift(LEFT, DOWN*1.3)
+        curr.to_edge(UP).shift(RIGHT, DOWN*1.12)
+        desired.to_edge(UP).shift(LEFT, DOWN*1.1)
 
         self.play(Write(desired), Write(curr))
 
         minus = MathTex("-", font_size=30).next_to(desired)
 
         self.play(Write(minus))
+
+        self.play(curr.animate.shift(LEFT*0.5), desired.animate.shift(LEFT*0.5), minus.animate.shift(LEFT*0.5),
+                  run_time=0.3)
 
         greater = MathTex(r"> 90^{\circ}", font_size=40).next_to(curr)
 
@@ -660,4 +663,51 @@ class OptimizationScene(Scene):
 
 class CoordinateTransformScene(Scene):
     def construct(self):
+        chassis = Square(side_length=2, fill_color=BLUE_C, fill_opacity=1.0)
+
+        self.play(Create(chassis))
+
+        start = chassis.get_top()
+
+        end = start+[0, 1, 0]
+
+        forward = Arrow(start, end, buff=0, color=ORANGE, stroke_width=2.5)
+
+        forward_label = Text("*This arrow represents the front of the robot", color=ORANGE, font_size=20)
+        
+        forward_label.shift(UP*3, LEFT*3)
+
+        group_1 = VGroup(chassis, forward)
+
+        self.play(Create(forward), Write(forward_label))
+
+        self.play(Rotate(
+            group_1,
+            angle=90*DEGREES,
+            about_point=chassis.get_center()
+        ))
+
+        group_1_copy = group_1.copy()
+        
+        self.wait(1)
+
+        self.play(group_1.animate.shift(LEFT*1.5), Unwrite(forward_label))
+        
+        self.wait(1)
+        
+        self.play(Uncreate(group_1))
+
+        self.play(Create(group_1_copy))
+
+        self.wait(0.5)
+
+        self.play(Rotate(
+            group_1_copy[1],
+            angle=-90*DEGREES,
+            about_point=group_1_copy[0].get_center()))
+        
+        self.play(group_1_copy.animate.shift(UP*1.5))
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
         self.wait(2)
