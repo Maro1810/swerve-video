@@ -429,7 +429,7 @@ class ModuleStatesScene(Scene):
 
         chassis_speeds = MathTex(r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
 
-        chassis_speeds_label = MathTex("Chassis \ Speeds", font_size=40)
+        chassis_speeds_label = MathTex(r"Chassis \ Speeds", font_size=40)
         robot_relative = MathTex("(Robot-relative)", font_size=20)
 
         chassis_speeds.shift(LEFT*3.8)
@@ -709,5 +709,65 @@ class CoordinateTransformScene(Scene):
         self.play(group_1_copy.animate.shift(UP*1.5))
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+        arrow = Arrow([0, 0, 0], [1, 2.5, 0], buff=0, stroke_width=2.5, color=ORANGE)
+
+        dashed = DashedLine([0, 0, 0], [1.2, 0, 0], buff=0, dash_length=0.08)
+
+        arc = Arc(start_angle=0, angle=68.1985905*DEGREES)
+
+        theta = MathTex(r"\theta_R", font_size=30).next_to(arc).shift(UP*0.4, LEFT*0.4)
+
+        theta_label = Text("- Robot heading", font_size=30)
+
+        group = VGroup(arrow, dashed, arc, theta)
+
+        group.shift(LEFT*0.4, DOWN*0.4)
+
+        self.play(Create(arrow), Create(dashed), Create(arc), Write(theta))
+
+        self.play(theta.animate.shift(UP*2, LEFT*5))
+        self.play(theta.animate.scale(1.5))
+
+        theta_label.next_to(theta)
+
+        self.play(Write(theta_label))
+
+        self.wait(0.3)
+
+        self.play(Rotate(
+            arrow,
+            angle=-68.1985905*DEGREES,
+            about_point=[-0.4, -0.4, 0]
+        ),
+        Uncreate(arc))
+
+        self.wait(0.5)
+
+        self.play(Uncreate(theta), Uncreate(theta_label))
+
+        self.wait(1.5)
+
+        rect1 = Rectangle(height=1, width=2.5)
+        rect2 = Rectangle(height=1, width=2.5)
+
+        robot_rel = Text("Robot Coordinates", font_size=17)
+        field_rel = Text("Field Coordinates", font_size=17)
+
+        rect1.shift(DOWN*2, LEFT*2)
+        rect2.shift(DOWN*2, RIGHT*2)
+
+        field_rel.shift(DOWN*2, LEFT*2)
+        robot_rel.shift(DOWN*2, RIGHT*2)
+
+        arrow2 = Arrow([0, 0, 0], [1, 0, 0], buff=0, stroke_width=2)
+
+        arrow2.next_to(rect1)
+
+        self.play(Create(rect1), Create(field_rel))
+
+        self.play(Create(arrow2))
+
+        self.play(Create(rect2), Create(robot_rel))
 
         self.wait(2)
