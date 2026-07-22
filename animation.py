@@ -770,4 +770,34 @@ class CoordinateTransformScene(Scene):
 
         self.play(Create(rect2), Create(robot_rel))
 
+        self.wait(1.7)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+        ax = Axes(
+            x_range=[0, 8, 1],
+            y_range=[0, 8, 1],
+            tips=True,
+            axis_config={"include_numbers": False}
+        )
+
+        chassis = Square(side_length=1.3, fill_color=BLUE_C, fill_opacity=1.0)
+
+        xr = Arrow(chassis.get_center(), chassis.get_center()+RIGHT, buff=0)
+        yr = Arrow(chassis.get_center(), chassis.get_center()+UP, buff=0)
+
+        full_chassis = VGroup(chassis, xr, yr)
+
+        full_chassis.rotate(angle=-30*DEGREES, about_point=chassis.get_center()).shift(LEFT)
+
+        self.play(Create(ax))
+
+        self.play(Create(full_chassis))
+
+        dashed = DashedLine(full_chassis.get_center(), full_chassis.get_center()+RIGHT, dash_length=0.08)
+
+        arc = Arc(start_angle=0, angle=60*DEGREES, radius=0.5).move_to(dashed).shift(UP*0.2, LEFT*0.1)
+
+        self.play(Create(dashed), Create(arc))
+
         self.wait(2)
