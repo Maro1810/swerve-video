@@ -790,9 +790,7 @@ class CoordinateTransformScene(Scene):
 
         full_chassis.rotate(angle=-30*DEGREES, about_point=chassis.get_center()).shift(LEFT)
 
-        self.play(Create(ax))
-
-        self.play(Create(full_chassis))
+        axes_copy = full_chassis.copy()
 
         dashed = DashedLine(full_chassis.get_center(), full_chassis.get_center()+RIGHT, dash_length=0.08)
 
@@ -802,10 +800,59 @@ class CoordinateTransformScene(Scene):
 
         theta.next_to(arc).shift(UP*0.3)
 
-        vf = Arrow(ax.get_origin(), ax.get_origin()+[1, 2, 0], buff=0, color=GREEN)
+        vf = Arrow(ax.get_origin(), ax.get_origin()+[2, 1, 0], buff=0, color=GREEN, stroke_width=3.5)
+
+        vr = Arrow(chassis.get_center(), chassis.get_center()+[2, 1, 0], buff=0, color=RED, stroke_width=3.5)
+
+        vr_copy = vr.copy()
+
+        axes_copy.remove(axes_copy[0])
+
+        axes_copy.shift(RIGHT*4, UP*2)
+
+        axes_copy.rotate(30*DEGREES, about_point=axes_copy.get_center())
+
+        vr_copy.move_to(axes_copy)
+
+        vr_copy.rotate(30*DEGREES)
+
+        axes_copy.scale(1.5)
+
+        vr_copy.shift(UP*0.3)
+
+        components = vr_copy.get_end()-vr_copy.get_start()
+
+        vf_x = Arrow(ax.get_origin(), ax.get_origin()+[2, 0, 0], color=ORANGE, buff=0, stroke_width=4.5)
+        vf_y = Arrow(vf_x.get_end(), vf_x.get_end()+[0, 1, 0], color=YELLOW, buff=0, stroke_width=4.5)
+
+        vr_x = Arrow(vr_copy.get_start(), vr_copy.get_start()+[components[0], 0, 0], color=ORANGE, buff=0,
+                     stroke_width=4.5)
+        vr_y = Arrow(vr_x.get_end(), vr_x.get_end()+[0, components[1], 0], color=YELLOW, buff=0,
+                     stroke_width=4.5)
+        
+        vf_label = MathTex(r"v_f")
+        vr_label = MathTex(r"v_r")
+
+        vf_x_label = MathTex(r"v_{fx}")
+        vf_y_label = MathTex(r"v_{fy}")
+
+        vr_x_label = MathTex(r"v_{rx}")
+        vr_y_label = MathTex(r"v_{ry}")
+        
+        self.play(Create(ax))
 
         self.play(Create(vf))
 
-        self.play(Create(dashed), Create(arc), Write(theta))
+        self.play(Create(full_chassis))
+
+        self.play(Create(vr), Create(axes_copy), Create(vr_copy))
+
+        self.play(Create(vf_x))
+        self.play(Create(vf_y))
+
+        self.play(Create(vr_x))
+        self.play(Create(vr_y))
+
+        # self.play(Create(dashed), Create(arc), Write(theta))
 
         self.wait(2)
