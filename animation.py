@@ -170,8 +170,6 @@ class CircleScene(Scene):
 
         dots = [self.dot(i, circles, theta, colors[i]) for i in range(3)]
 
-        # self.add_sound("voiceovers/in depth vid 17.m4a")
-
         self.add(circ_group)
         self.add(*arrows)
         self.add(*labels)
@@ -250,8 +248,6 @@ class RobotScene(Scene):
         vec_copy = vel_vectors[0].copy()
 
         full_chassis = VGroup(chassis, Dot(chassis.get_center(), radius=0.05, color=BLACK))
-
-        # self.add_sound("voiceovers/in depth vid 18.m4a")
         
         self.play(Create(full_chassis))
 
@@ -293,8 +289,6 @@ class RobotScene(Scene):
         self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
 
         full_robot.remove(vel_vectors[0])
-
-        # self.add_sound("voiceovers/in depth vid 19.m4a")
 
         self.wait(0.6)
 
@@ -339,8 +333,6 @@ class RobotScene(Scene):
         self.play(vec_copy[0].animate.set_stroke(width=4, family=False), run_time=0.2)
 
         self.play(vec_copy.animate.move_to(top_right+UP*0.2+LEFT*0.2))
-
-        # self.add_sound("voiceovers/in depth vid 19.m4a")
 
         romega = MathTex(r"\omega ||r||", font_size=40)
 
@@ -781,10 +773,26 @@ class CoordinateTransformScene(Scene):
             axis_config={"include_numbers": False}
         )
 
+        labels = ax.get_axis_labels(
+            x_label=MathTex(r"x_f").scale(0.7), y_label=MathTex(r"y_f").scale(0.7)
+        )
+
         chassis = Square(side_length=1.3, fill_color=BLUE_C, fill_opacity=1.0)
 
-        xr = Arrow(chassis.get_center(), chassis.get_center()+RIGHT, buff=0)
-        yr = Arrow(chassis.get_center(), chassis.get_center()+UP, buff=0)
+        yr = Arrow(chassis.get_center(), chassis.get_center()+LEFT, buff=0)
+        xr = Arrow(chassis.get_center(), chassis.get_center()+UP, buff=0)
+
+        xr_label = MathTex("x_r", font_size=30)
+        yr_label = MathTex("y_r", font_size=30)
+
+        xr_label_copy = xr_label.copy()
+        yr_label_copy = yr_label.copy()
+
+        yr_label_copy.shift(UP*3.4, RIGHT*2.4)
+        xr_label_copy.shift(RIGHT*3.5, UP*2.3) #h
+
+        yr_label.next_to(xr).shift(LEFT*2.5, UP*0.1)
+        xr_label.next_to(yr).shift(LEFT, UP)
 
         full_chassis = VGroup(chassis, xr, yr)
 
@@ -796,9 +804,9 @@ class CoordinateTransformScene(Scene):
 
         arc = Arc(start_angle=0, angle=60*DEGREES, radius=0.5, color=YELLOW).move_to(dashed).shift(UP*0.2, LEFT*0.1)
 
-        theta = MathTex(r"\theta_R", font_size=25, color=YELLOW)
+        theta = MathTex(r"\theta_R", font_size=30, color=YELLOW)
 
-        theta.next_to(arc).shift(UP*0.3)
+        theta.next_to(arc).shift(RIGHT*0.3)
 
         vf = Arrow(ax.get_origin(), ax.get_origin()+[2, 1, 0], buff=0, color=GREEN, stroke_width=3.5)
 
@@ -810,15 +818,15 @@ class CoordinateTransformScene(Scene):
 
         axes_copy.shift(RIGHT*4, UP*2)
 
-        axes_copy.rotate(30*DEGREES, about_point=axes_copy.get_center())
+        axes_copy.rotate(-60*DEGREES, about_point=axes_copy.get_center())
 
         vr_copy.move_to(axes_copy)
 
-        vr_copy.rotate(30*DEGREES)
+        vr_copy.rotate(-60*DEGREES)
 
-        axes_copy.scale(1.5)
+        axes_copy.scale(1.3)
 
-        vr_copy.shift(UP*0.3)
+        vr_copy.shift(RIGHT*0.4, DOWN*1.2)
 
         components = vr_copy.get_end()-vr_copy.get_start()
 
@@ -830,29 +838,60 @@ class CoordinateTransformScene(Scene):
         vr_y = Arrow(vr_x.get_end(), vr_x.get_end()+[0, components[1], 0], color=YELLOW, buff=0,
                      stroke_width=4.5)
         
-        vf_label = MathTex(r"v_f")
-        vr_label = MathTex(r"v_r")
+        vf_label = MathTex(r"v_f", font_size=35)
+        vr_label = MathTex(r"v_r", font_size=35)
 
-        vf_x_label = MathTex(r"v_{fx}")
-        vf_y_label = MathTex(r"v_{fy}")
+        vf_x_label = MathTex(r"v_{xf}", font_size=35)
+        vf_y_label = MathTex(r"v_{yf}", font_size=35)
 
-        vr_x_label = MathTex(r"v_{rx}")
-        vr_y_label = MathTex(r"v_{ry}")
+        vr_x_label = MathTex(r"v_{xr}", font_size=35)
+        vr_y_label = MathTex(r"v_{yr}", font_size=35)
+
+        vr_label_copy = vr_label.copy()
         
-        self.play(Create(ax))
+        vf_label.next_to(vf, UP*0.8).shift(RIGHT*0.8)
 
-        self.play(Create(vf))
+        vr_label.next_to(vr, UP*0.8).shift(RIGHT*0.8)
+        vr_label_copy.next_to(vr_copy, DOWN).shift(LEFT*0.2, UP*0.8)
 
-        self.play(Create(full_chassis))
+        vf_x_label.next_to(vf_x, DOWN*0.3)
+        vf_y_label.next_to(vf_y, RIGHT*0.4)
 
-        self.play(Create(vr), Create(axes_copy), Create(vr_copy))
+        vr_x_label.next_to(vr_x, DOWN*0.1).shift(RIGHT*0.5)
+        vr_y_label.next_to(vr_y, RIGHT*0.4)
 
-        self.play(Create(vf_x))
-        self.play(Create(vf_y))
+        eq1 = MathTex(r"v_{xr}=v_{xf}\cos(\theta_R)+v_{yf}\sin(\theta_R)", font_size=35)
+        eq2 = MathTex(r"v_{yr}=v_{yf}\cos(\theta_R)-v_{xf}\sin(\theta_R)", font_size=35)
 
-        self.play(Create(vr_x))
-        self.play(Create(vr_y))
+        eq1.shift(RIGHT*3.6, DOWN*0.5)
+        eq2.next_to(eq1, DOWN)
 
-        # self.play(Create(dashed), Create(arc), Write(theta))
+        self.play(Create(ax), Create(labels))
 
-        self.wait(2)
+        self.play(Create(vf), Write(vf_label))
+
+        self.play(Create(vf_x), Write(vf_x_label))
+        self.play(Create(vf_y), Write(vf_y_label), Create(full_chassis), Create(xr_label), Create(yr_label))
+
+        # self.play(Create(full_chassis), Create(xr_label), Create(yr_label))
+
+        self.play(Create(vr), Create(axes_copy), 
+                  Create(vr_copy), Write(vr_label), 
+                  Write(vr_label_copy), Create(xr_label_copy),
+                  Create(yr_label_copy))
+
+        self.play(Create(vr_x), Write(vr_x_label))
+        self.play(Create(vr_y), Write(vr_y_label))
+
+        self.wait(2.9)
+
+        self.play(Create(dashed), Create(arc), Write(theta))
+
+        self.wait(1.5)
+
+        self.play(Create(eq1))
+        self.play(Create(eq2))
+
+        self.wait(4.5)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
