@@ -880,12 +880,32 @@ class CoordinateTransformScene(Scene):
 
         clockwise_rotation = MathTex(r"\begin{bmatrix} v_{xr} \\ v_{yr} \end{bmatrix}", r"=\begin{bmatrix} \cos(\theta_R) &  \sin(\theta_R)\\ -\sin(\theta_R) & \sin(\theta_R) \end{bmatrix} \begin{bmatrix} v_{xf} \\ v_{xr} \end{bmatrix}")
 
+        text = Text("This will be later referenced as", font_size=30)
+
+        v_trans = MathTex(r"v_{trans}=\left\langle v_{xr}, v_{yr} \right\rangle", font_size=35)
+
+        text.shift(DOWN*2, LEFT*1.5)
+
+        v_trans.next_to(text)
+
         self.play(Write(clockwise_rotation))
 
-        self.wait(3.3)
+        self.play(Write(text))
+
+        self.play(Write(v_trans))
+
+        self.wait(0.7)
 
         self.play(Indicate(clockwise_rotation[0]))
 
         self.wait(0.8)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+class WPILibMethodScene(Scene):
+    def construct(self):
+        box1 = Rectangle(width=2, height=1)
+
+        self.play(Create(box1))
+
+        self.wait(2)
