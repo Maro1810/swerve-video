@@ -700,6 +700,8 @@ class CoordinateTransformScene(Scene):
         
         self.play(group_1_copy.animate.shift(UP*1.5))
 
+        self.wait(1)
+
         self.play(*[FadeOut(mob) for mob in self.mobjects])
 
         arrow = Arrow([0, 0, 0], [1, 2.5, 0], buff=0, stroke_width=2.5, color=ORANGE)
@@ -785,20 +787,12 @@ class CoordinateTransformScene(Scene):
         xr_label = MathTex("x_r", font_size=30)
         yr_label = MathTex("y_r", font_size=30)
 
-        xr_label_copy = xr_label.copy()
-        yr_label_copy = yr_label.copy()
-
-        yr_label_copy.shift(UP*3.4, RIGHT*2.4)
-        xr_label_copy.shift(RIGHT*3.5, UP*2.3) #h
-
         yr_label.next_to(xr).shift(LEFT*2.5, UP*0.1)
-        xr_label.next_to(yr).shift(LEFT, UP)
+        xr_label.next_to(yr).shift(LEFT*1.2, UP)
 
         full_chassis = VGroup(chassis, xr, yr)
 
         full_chassis.rotate(angle=-30*DEGREES, about_point=chassis.get_center()).shift(LEFT)
-
-        axes_copy = full_chassis.copy()
 
         dashed = DashedLine(full_chassis.get_center(), full_chassis.get_center()+RIGHT, dash_length=0.08)
 
@@ -812,30 +806,16 @@ class CoordinateTransformScene(Scene):
 
         vr = Arrow(chassis.get_center(), chassis.get_center()+[2, 1, 0], buff=0, color=RED, stroke_width=3.5)
 
-        vr_copy = vr.copy()
-
-        axes_copy.remove(axes_copy[0])
-
-        axes_copy.shift(RIGHT*4, UP*2)
-
-        axes_copy.rotate(-60*DEGREES, about_point=axes_copy.get_center())
-
-        vr_copy.move_to(axes_copy)
-
-        vr_copy.rotate(-60*DEGREES)
-
-        axes_copy.scale(1.3)
-
-        vr_copy.shift(RIGHT*0.4, DOWN*1.2)
-
-        components = vr_copy.get_end()-vr_copy.get_start()
+        components = vr.get_end()-vr.get_start()
 
         vf_x = Arrow(ax.get_origin(), ax.get_origin()+[2, 0, 0], color=ORANGE, buff=0, stroke_width=4.5)
         vf_y = Arrow(vf_x.get_end(), vf_x.get_end()+[0, 1, 0], color=YELLOW, buff=0, stroke_width=4.5)
 
-        vr_x = Arrow(vr_copy.get_start(), vr_copy.get_start()+[components[0], 0, 0], color=ORANGE, buff=0,
+        vr_x = Arrow(vr.get_start(), vr.get_start()+[components[0], 0, 0], color=ORANGE, buff=0,
                      stroke_width=4.5)
-        vr_y = Arrow(vr_x.get_end(), vr_x.get_end()+[0, components[1], 0], color=YELLOW, buff=0,
+                     
+        vr_x.rotate(60*DEGREES, about_point=chassis.get_center())
+        vr_y = Arrow(vr_x.get_end(), vr.get_end(), color=YELLOW, buff=0,
                      stroke_width=4.5)
         
         vf_label = MathTex(r"v_f", font_size=35)
@@ -846,24 +826,25 @@ class CoordinateTransformScene(Scene):
 
         vr_x_label = MathTex(r"v_{xr}", font_size=35)
         vr_y_label = MathTex(r"v_{yr}", font_size=35)
-
-        vr_label_copy = vr_label.copy()
         
         vf_label.next_to(vf, UP*0.8).shift(RIGHT*0.8)
 
-        vr_label.next_to(vr, UP*0.8).shift(RIGHT*0.8)
-        vr_label_copy.next_to(vr_copy, DOWN).shift(LEFT*0.2, UP*0.8)
+        vr_label.next_to(vr, DOWN).shift(RIGHT*0.8, UP*0.9)
 
         vf_x_label.next_to(vf_x, DOWN*0.3)
         vf_y_label.next_to(vf_y, RIGHT*0.4)
 
-        vr_x_label.next_to(vr_x, DOWN*0.1).shift(RIGHT*0.5)
+        vr_x_label.next_to(vr_x, UP).shift(LEFT*0.1, DOWN*0.4)
         vr_y_label.next_to(vr_y, RIGHT*0.4)
+
+        cong = VGroup(vr_x_label, vr_y_label, vr_label, vr_y, vr_x, full_chassis, dashed, arc, theta, vr, xr_label, yr_label)
+
+        cong.shift(LEFT)
 
         eq1 = MathTex(r"v_{xr}=v_{xf}\cos(\theta_R)+v_{yf}\sin(\theta_R)", font_size=35)
         eq2 = MathTex(r"v_{yr}=v_{yf}\cos(\theta_R)-v_{xf}\sin(\theta_R)", font_size=35)
 
-        eq1.shift(RIGHT*3.6, DOWN*0.5)
+        eq1.shift(RIGHT*2.9, UP*0.3)
         eq2.next_to(eq1, DOWN)
 
         self.play(Create(ax), Create(labels))
@@ -875,10 +856,7 @@ class CoordinateTransformScene(Scene):
 
         # self.play(Create(full_chassis), Create(xr_label), Create(yr_label))
 
-        self.play(Create(vr), Create(axes_copy), 
-                  Create(vr_copy), Write(vr_label), 
-                  Write(vr_label_copy), Create(xr_label_copy),
-                  Create(yr_label_copy))
+        self.play(Create(vr), Write(vr_label))
 
         self.play(Create(vr_x), Write(vr_x_label))
         self.play(Create(vr_y), Write(vr_y_label))
@@ -892,6 +870,22 @@ class CoordinateTransformScene(Scene):
         self.play(Create(eq1))
         self.play(Create(eq2))
 
+        self.wait(3)
+
+        self.play(Indicate(eq1), Indicate(eq2))
+
         self.wait(4.5)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+        clockwise_rotation = MathTex(r"\begin{bmatrix} v_{xr} \\ v_{yr} \end{bmatrix}", r"=\begin{bmatrix} \cos(\theta_R) &  \sin(\theta_R)\\ -\sin(\theta_R) & \sin(\theta_R) \end{bmatrix} \begin{bmatrix} v_{xf} \\ v_{xr} \end{bmatrix}")
+
+        self.play(Write(clockwise_rotation))
+
+        self.wait(3.3)
+
+        self.play(Indicate(clockwise_rotation[0]))
+
+        self.wait(0.8)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
