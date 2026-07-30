@@ -904,8 +904,25 @@ class CoordinateTransformScene(Scene):
 
 class WPILibMethodScene(Scene):
     def construct(self):
-        box1 = Rectangle(width=2, height=1)
+        box1 = Rectangle(width=3.7, height=1)
 
-        self.play(Create(box1))
+        fromFieldRel = Text("fromFieldRelativeSpeeds()", font_size=20)
+
+        fromFieldRel.move_to(box1)
+
+        v_trans = MathTex(r"\begin{bmatrix} v_{xf} \\ v_{yf} \end{bmatrix}", font_size=35)
+        theta = MathTex(r"+\theta_R", font_size=35)
+
+        arrow = Arrow([0, 0, 0], [1.3, 0, 0], color=RED)
+        
+        v_trans.next_to(fromFieldRel, LEFT).shift(LEFT*2.4)
+        theta.next_to(v_trans)
+        arrow.next_to(theta)
+
+        self.play(Create(box1), Write(fromFieldRel))
+
+        self.play(Write(v_trans))
+        self.play(Write(theta))
+        self.play(Create(arrow))
 
         self.wait(2)
