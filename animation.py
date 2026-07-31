@@ -911,18 +911,47 @@ class WPILibMethodScene(Scene):
         fromFieldRel.move_to(box1)
 
         v_trans = MathTex(r"\begin{bmatrix} v_{xf} \\ v_{yf} \end{bmatrix}", font_size=35)
-        theta = MathTex(r"+\theta_R", font_size=35)
+        theta = MathTex(r"+ \ \theta_R", font_size=35)
+        v_robot = MathTex(r"\begin{bmatrix} v_{xr} \\ v_{yr} \end{bmatrix}", font_size=35)
 
         arrow = Arrow([0, 0, 0], [1.3, 0, 0], color=RED)
+
+        arrow2 = arrow.copy()
+
+        arrow2.set_color(GREEN)
         
         v_trans.next_to(fromFieldRel, LEFT).shift(LEFT*2.4)
         theta.next_to(v_trans)
         arrow.next_to(theta)
 
+        arrow2.next_to(box1)
+        v_robot.next_to(arrow2)
+
         self.play(Create(box1), Write(fromFieldRel))
+
+        self.wait(2)
 
         self.play(Write(v_trans))
         self.play(Write(theta))
+
         self.play(Create(arrow))
+        self.play(Create(arrow2))
+        self.play(Write(v_robot))
 
         self.wait(2)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+        self.play(Create(Text("Up Next...").shift(UP*3)))
+
+        box1 = Rectangle(width=4, height=2.4).shift(UP, LEFT*2.8)
+        box2 = Rectangle(width=4, height=2.4).shift(UP, RIGHT*2.8)
+
+        box3 = Rectangle(width=4, height=2.4).shift(DOWN*2.1, LEFT*2.8)
+        box4 = Rectangle(width=4, height=2.4).shift(DOWN*2.1, RIGHT*2.8)
+
+        self.play(Create(box1), Create(box2), Create(box3), Create(box4))
+
+        self.wait(7.5)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
