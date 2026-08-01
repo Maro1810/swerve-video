@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:C:/Users/rayya/Downloads/manim-test/media/videos/animation/480p15/partial_movie_files/PreSectorScene/1185818338_1415824084_2190998215.mp4'
+file 'file:C:/Users/rayya/Downloads/manim-test/media/videos/animation/480p15/partial_movie_files/PreSectorScene/624642324_1269714772_1517182368.mp4'
+file 'file:C:/Users/rayya/Downloads/manim-test/media/videos/animation/480p15/partial_movie_files/PreSectorScene/624642324_1391709230_1753238658.mp4'

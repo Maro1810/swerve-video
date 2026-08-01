@@ -955,3 +955,135 @@ class WPILibMethodScene(Scene):
         self.wait(7.5)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+class PreSectorScene(Scene):
+    def construct(self):
+        time = ValueTracker(0)
+
+        robot =  VGroup(
+            Square(side_length=2, fill_color=BLUE, fill_opacity=1.0), 
+            Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to([1, 1, 0]),
+            Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to([-1, 1, 0]),
+            Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to([-1, -1, 0]),
+            Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to([1, -1, 0]))
+
+        velocity_vectors = VGroup(
+            Arrow(ORIGIN, UP*1.5, buff=0, color=ORANGE),
+            Arrow(ORIGIN, UP*1.5, buff=0, color=ORANGE),
+            Arrow(ORIGIN, UP*1.5, buff=0, color=ORANGE),
+            Arrow(ORIGIN, UP*1.5, buff=0, color=ORANGE)
+        )
+
+        robot.add_updater(lambda m: m.shift(
+        [
+            1.5*math.cos(time.get_value()) - m.get_center()[0],
+            1.5*math.sin(time.get_value()) - m.get_center()[1],
+            0
+        ]
+        ))
+
+        module_angles = [0, 0, 0, 0]
+
+        def update_module(i):
+            def updater(m):
+                desired = self.calculate_angle(time.get_value()) - PI/2
+
+                delta = desired - module_angles[i]
+
+                m.rotate(delta)
+
+                module_angles[i] = desired
+
+            return updater
+
+        for i in range(4):
+            robot[i+1].add_updater(update_module(i))
+
+        for i in range(4):
+            velocity_vectors[i].add_updater(
+                lambda arrow, i=i: arrow.put_start_and_end_on(robot[i+1].get_center(), robot[i+1].get_center()+UP))
+            
+
+        velocity_angles = [0, 0, 0, 0]
+
+        def update_velocity(i):
+            def updater(arrow):
+                desired = self.calculate_angle(time.get_value())
+
+                delta = desired - velocity_angles[i]
+
+                arrow.rotate(delta)
+
+                velocity_angles[i] = desired
+
+                direction = np.array([math.cos(desired), math.sin(desired), 0])
+
+                start = robot[i+1].get_center()
+
+                arrow.put_start_and_end_on(start, start+direction*1.5)
+
+            return updater
+
+        for i in range(4):
+            velocity_vectors[i].add_updater(update_velocity(i))
+
+        self.add(robot, *velocity_vectors)
+
+        self.play(time.animate.set_value(10), 
+                  run_time=5, rate_func=linear)
+
+        angular_velocity = PI/2
+
+        heading = ValueTracker(0)
+
+        def rotate_robot(m, dt):
+            m.rotate(angular_velocity * dt)
+            heading.increment_value(angular_velocity * dt)
+
+        robot.add_updater(rotate_robot)
+
+        for i in range(4):
+            velocity_vectors[i].add_updater(lambda arrow, i=i: arrow.put_start_and_end_on(
+                robot[i+1].get_center(),
+                robot[i+1].get_center() + self.module_velocity(
+                    time.get_value(),
+                    robot[i+1].get_center(),
+                    angular_velocity,
+                    robot[0].get_center()
+            )[0]
+        ))
+
+        def update_module2(i):
+            def updater(m):
+                desired = self.module_velocity(time.get_value(), 
+                        robot[i+1].get_center(), angular_velocity,
+                        robot[0].get_center())[1] - heading.get_value() - PI/2
+            
+                delta = desired - module_angles[i]
+            
+                m.rotate(delta)
+            
+                module_angles[i] = desired
+            
+            return updater
+
+        for i in range(4):
+            robot[i+1].add_updater(update_module2(i))
+
+        self.play(time.animate.set_value(30), run_time=10, rate_func=linear)
+
+        self.wait(2)
+
+    def calculate_angle(self, time):
+        return math.atan2(1.5*math.cos(time), -1.5*math.sin(time))
+
+    def module_velocity(self, t, module_position, omega, pos):
+        robot_velocity = np.array([-1.5*math.sin(t), 1.5*math.cos(t), 0])
+
+        r = module_position - pos
+
+        rotational_velocity = np.array([-omega*r[1], omega*r[0], 0])
+
+        overall_velocity = robot_velocity + rotational_velocity
+
+        return overall_velocity, math.atan2(overall_velocity[1], overall_velocity[0])
