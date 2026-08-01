@@ -1087,3 +1087,52 @@ class PreSectorScene(Scene):
         overall_velocity = robot_velocity + rotational_velocity
 
         return overall_velocity, math.atan2(overall_velocity[1], overall_velocity[0])
+
+class RealPreSectorScene(Scene):
+    def construct(self):
+        v_tang = MathTex(r"v_{tangential}= \ ?")
+
+        self.play(Write(v_tang))
+
+        self.wait(2)
+
+        self.play(Unwrite(v_tang))
+
+        theta = ValueTracker(0)
+        growth = ValueTracker(0)
+
+        circle = Circle(radius=2, color=BLUE)
+
+        func = self.create_arrow(circle, theta, GREEN, 2, growth)
+
+        dot = self.dot(circle, theta, GREEN)
+
+        self.play(Create(circle))
+
+        self.wait(1.3)
+
+        self.add(func)
+
+        self.play(growth.animate.set_value(1), run_time=1)
+
+        self.play(theta.animate.set_value(12*PI), run_time=12, rate_func=linear)
+
+        self.wait(2)
+
+    def tangent_vector(self, angle, point, radius, growth):
+        return point+np.array([-radius*math.sin(angle), radius*math.cos(angle), 0])*growth.get_value()
+    
+    def create_arrow(self, circle, theta, col, radius, growth):
+        return always_redraw(lambda: Arrow(
+            circle.point_at_angle(theta.get_value()),
+            self.tangent_vector(theta.get_value(), circle.point_at_angle(theta.get_value()), radius, growth),
+            buff=0,
+            color=col,
+            stroke_width=3))
+    
+    def dot(self, circle, theta, col):
+        return always_redraw(lambda: Dot(
+            point=circle.point_at_angle(theta.get_value()),
+            radius=0.05,
+            color=col
+        ))
