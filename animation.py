@@ -974,13 +974,21 @@ class PreSectorScene(Scene):
             Arrow(ORIGIN, UP*1.5, buff=0, color=ORANGE)
         )
 
-        robot.add_updater(lambda m: m.shift(
-        [
-            1.5*math.cos(time.get_value()) - m.get_center()[0],
-            1.5*math.sin(time.get_value()) - m.get_center()[1],
-            0
-        ]
-        ))
+        angular_velocity = 0
+        heading = ValueTracker(0)
+
+        def update_robot(m, dt):
+            center = np.array([
+                1.5*math.cos(time.get_value()),
+                1.5*math.sin(time.get_value()),
+                0
+            ])
+
+            m.move_to(center)
+            m.rotate(angular_velocity*dt)
+            heading.increment_value(angular_velocity * dt)
+
+        robot.add_updater(update_robot)
 
         module_angles = [0, 0, 0, 0]
 
@@ -1029,18 +1037,10 @@ class PreSectorScene(Scene):
 
         self.add(robot, *velocity_vectors)
 
-        self.play(time.animate.set_value(10), 
-                  run_time=5, rate_func=linear)
+        self.play(time.animate.set_value(15), 
+                  run_time=7, rate_func=linear)
 
         angular_velocity = PI/2
-
-        heading = ValueTracker(0)
-
-        def rotate_robot(m, dt):
-            m.rotate(angular_velocity * dt)
-            heading.increment_value(angular_velocity * dt)
-
-        robot.add_updater(rotate_robot)
 
         for i in range(4):
             velocity_vectors[i].add_updater(lambda arrow, i=i: arrow.put_start_and_end_on(
