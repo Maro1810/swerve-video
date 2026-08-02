@@ -381,7 +381,7 @@ class RobotScene(Scene):
 
         self.wait(1.5)
 
-        v_trans = Arrow(top_right, top_right+UP*1.2+RIGHT*0.4, stroke_width=4, 
+        v_trans = Arrow(top_right, top_right+UP*1.21438+RIGHT*1.08609, stroke_width=4, 
                         tip_length=0.2, color=YELLOW, buff=0)
         
         v_trans_label = MathTex(r"v_{trans}", font_size=30, color=YELLOW).next_to(v_trans).shift(UP*0.5+LEFT*0.1)
@@ -397,9 +397,9 @@ class RobotScene(Scene):
         v_overall = Arrow(top_right, top_right+overall, stroke_width=4,
                           tip_length=0.2, color=GREEN, buff=0)
         
-        v_overall_label = MathTex(r"v_{overall}", font_size=30, color=GREEN).shift(UP*2.9+RIGHT*1.3)
+        v_overall_label = MathTex(r"v_{overall}", font_size=30, color=GREEN).shift(UP*2.9+RIGHT*0.6)
         
-        self.play(Create(v_overall), Write(v_overall_label), modules[0].animate.rotate(-PI/5.5))
+        self.play(Create(v_overall), Write(v_overall_label), modules[0].animate.rotate(-PI/3.38))
 
         v_overall_eq = MathTex(r"v_{overall}=v_{trans}+v_{rot}=\left\langle v_{xr},v_{yr} \right\rangle+\left\langle -\omega r_y,\omega r_x \right\rangle=\left\langle v_{xr}-\omega r_y,v_{yr}+\omega r_x \right\rangle",
                             font_size=35)
@@ -415,10 +415,6 @@ class RobotScene(Scene):
 class ModuleStatesScene(Scene):
 
     def construct(self):
-        wpi = ImageMobject("wpilib.png")
-
-        # self.play(FadeIn(wpi))
-
         chassis_speeds = MathTex(r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
 
         chassis_speeds_label = MathTex(r"Chassis \ Speeds", font_size=40)
@@ -1136,3 +1132,114 @@ class RealPreSectorScene(Scene):
             radius=0.05,
             color=col
         ))
+
+class DisclaimerScene(Scene):
+    def construct(self):
+        text = Text("Prerequisites").shift(UP*3)
+
+        self.play(Write(text))
+
+        point1 = ORIGIN
+        point2 = (3, 0, 0)
+        point3 = (3, 3, 0)
+
+        triangle = Polygon(point1, point2, point3, fill_color=BLUE, fill_opacity=0.7).shift(LEFT*3.5, DOWN*0.4)
+
+        trig = Text("Trigonometry", font_size=30)
+        vectors = Text("Vectors", font_size=30)
+        rot_dynamics = Text("Rotational Dynamics", font_size=25)
+        lin_alg = Text("Linear Algebra", font_size=25)
+        helpful = Text("(helpful)", font_size=15)
+        helpful_clone = helpful.copy()
+
+        vector = Arrow(ORIGIN, ORIGIN+(1, 2, 0), color=RED).shift(RIGHT*1.7)
+        components = MathTex(r"\left\langle 1, 2 \right\rangle", font_size=40)
+        components.next_to(vector, RIGHT).shift(RIGHT*0.4)
+
+        omega = MathTex(r"\omega", font_size=65).shift(LEFT*3.2, DOWN*2)
+        curved_arrow = CurvedArrow(ORIGIN, (1, 1, 0), angle=310*DEGREES, color=ORANGE)
+
+        identity = MathTex(r"\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}", 
+                           font_size=30).shift(DOWN*2, RIGHT*2.5)
+
+        curved_arrow.rotate(3*PI/2)
+
+        curved_arrow.scale(0.25)
+
+        curved_arrow.shift(DOWN*1.2, LEFT*3.7)
+
+        box1 = Rectangle(width=4, height=2.4).shift(LEFT*2, UP)
+        box2 = Rectangle(width=4, height=2.4).shift(RIGHT*3, UP)
+        box3 = Rectangle(width=3, height=1.5).shift(LEFT*2.5, DOWN*2)
+        box4 = Rectangle(width=3, height=1.5).shift(RIGHT*2.5, DOWN*2)
+
+        group1 = VGroup(triangle, box1)
+        group2 = VGroup(vectors, components, box2)
+
+        group1.shift(LEFT*0.5)
+        group2.shift(LEFT*0.5)
+
+        trig.next_to(box1, DOWN)
+        vectors.next_to(box2, DOWN)
+        rot_dynamics.next_to(box3, DOWN)
+        lin_alg.next_to(box4, DOWN)
+
+        helpful.next_to(rot_dynamics, DOWN).shift(UP*0.1)
+        helpful_clone.next_to(lin_alg, DOWN).shift(UP*0.1)
+
+        triangle.scale(0.5)
+
+        self.wait(0.8)
+
+        self.play(Create(box1))
+
+        self.play(Create(triangle), Write(trig))
+
+        self.play(Create(box2))
+
+        self.play(Create(vector), Write(components), Write(vectors))
+
+        self.play(Create(box3), run_time=0.5)
+
+        self.play(Write(omega), Create(curved_arrow), Write(rot_dynamics), Write(helpful), run_time=0.8)
+
+        self.play(Create(box4))
+
+        self.play(Write(identity), Write(lin_alg), Write(helpful_clone))
+
+        self.wait(7)
+
+class InputVectorScene(Scene):
+    def construct(self):
+        previously = Text("Previously...").shift(UP*3)
+        
+        self.play(Write(previously))
+        
+        self.wait(6.5)
+        
+        self.play(Uncreate(previously))
+
+        ax = Axes()
+
+        labels = ax.get_axis_labels(
+                    x_label=Text("Controller x-axis").scale(0.3), y_label=Text("Controller y-axis").scale(0.3)
+                )
+
+        growth = ValueTracker(0.0001)
+
+        vf = always_redraw(lambda: Arrow(
+            ax.get_origin(), 
+            ax.get_origin()+[2/math.sqrt(5)*growth.get_value(), 1/math.sqrt(5)*growth.get_value(), 0], 
+            buff=0, color=GREEN, stroke_width=3.5))       
+
+        self.play(Create(ax), Create(labels))
+
+        self.add(vf)
+
+        self.play(growth.animate.set_value(1), run_time=1)
+
+        self.wait(4)
+
+        self.play(growth.animate.set_value(math.sqrt(5)), run_time=1)
+
+        self.wait(7)
