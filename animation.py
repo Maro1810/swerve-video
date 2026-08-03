@@ -1325,8 +1325,14 @@ class OverviewScene(Scene):
 
 class ThanksForWatchingScene(Scene):
     def construct(self):
-        text = Text("Thanks for Watching!")
+        text = Text("Thanks for Watching!", font_size=75)
+
+        text.set_color_by_gradient(PINK, YELLOW, GREEN)
 
         self.play(Write(text))
 
-        self.wait(4)
+        self.wait(2)
+
+        self.play(Unwrite(text))
+
+        self.wait(1)
