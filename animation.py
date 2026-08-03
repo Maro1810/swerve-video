@@ -1243,3 +1243,90 @@ class InputVectorScene(Scene):
         self.play(growth.animate.set_value(math.sqrt(5)), run_time=1)
 
         self.wait(7)
+
+class OverviewScene(Scene):
+    def construct(self):
+        chassis = Square(side_length=2, fill_color=BLUE, fill_opacity=1.0)
+
+        modules = []
+        
+        pos = []
+        
+        top_left = chassis.get_left()+chassis.get_top()
+        top_right = chassis.get_right()+chassis.get_top()
+        bottom_left = chassis.get_left()+chassis.get_bottom()
+        bottom_right = chassis.get_right()+chassis.get_bottom()
+
+        overall_velocity = Arrow(chassis.get_center(), chassis.get_center()+UP+RIGHT*0.4, buff=0, color=ORANGE)
+
+        v_copy1 = Arrow(top_right, top_right+UP+RIGHT*0.4, buff=0, color=YELLOW)
+        v_copy2 = Arrow(top_left, top_left+UP+RIGHT*0.4, buff=0, color=YELLOW)
+        v_copy3 = Arrow(bottom_left, bottom_left+UP+RIGHT*0.4, buff=0, color=YELLOW)
+        v_copy4 = Arrow(bottom_right, bottom_right+UP+RIGHT*0.4, buff=0, color=YELLOW)
+        
+        pos.append(top_right)
+        pos.append(top_left)
+        pos.append(bottom_left)
+        pos.append(bottom_right)
+
+        for i in range(len(pos)):
+            mod = Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to(pos[i])
+        
+            modules.append(mod)
+
+        self.play(Create(chassis))
+        self.play(*[Create(mod) for mod in modules])
+
+        self.play(Create(overall_velocity))
+
+        self.wait(1.3)
+
+        self.play(*[mod.animate.rotate(-21.8014094864*DEGREES) for mod in modules])
+
+        self.play(Create(v_copy1), Create(v_copy2), Create(v_copy3), Create(v_copy4))
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects if mob != modules[0] and mob != v_copy1])
+
+        mod_group = VGroup(modules[0], v_copy1)
+
+        self.play(mod_group.animate.move_to(ORIGIN+UP*0.5))
+        self.play(modules[0].animate.scale(2))
+
+        self.play(Rotate(
+            mod_group,
+            angle=2*PI,
+            about_point=modules[0].get_center()
+        ), run_time=1.3)
+
+        self.play(v_copy1.animate.scale(1.4))
+
+        self.play(v_copy1.animate.shift(UP*1.5, LEFT*2.5))
+
+        brace = BraceBetweenPoints(v_copy1.get_end(), v_copy1.get_start())
+
+        speed = Text("speed", font_size=30)
+
+        theta = MathTex(r"\theta", font_size=45)
+        dashed = DashedLine(v_copy1.get_start(), v_copy1.get_start()+RIGHT, dash_length=0.3)
+
+        arc = Arc(radius=0.8, start_angle=0, angle=68.1985905136*DEGREES)
+        arc.next_to(v_copy1, RIGHT).shift(LEFT*0.5, DOWN*0.3)
+        theta.next_to(arc, RIGHT).shift(UP*0.4, LEFT*0.3)
+
+        speed.next_to(brace, LEFT).shift(RIGHT*0.3, UP*0.2)
+
+        self.play(Create(brace), Write(speed))
+
+        self.play(Create(arc), Create(dashed), Write(theta))
+
+        self.wait(4)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+class ThanksForWatchingScene(Scene):
+    def construct(self):
+        text = Text("Thanks for Watching!")
+
+        self.play(Write(text))
+
+        self.wait(4)
