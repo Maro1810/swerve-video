@@ -8,13 +8,10 @@ class SectorScene(Scene):
         sector = Sector(radius=3.0, angle=60*DEGREES)
 
         shift = np.array([-1.5, -0.7, 0])
-
         sector.shift(shift)
 
         arc = Arc(angle=60*DEGREES)
-
         arc.shift(shift)
-
         arc.set_color(PINK)
         
         sector.set_color(BLUE)
@@ -24,7 +21,6 @@ class SectorScene(Scene):
         theta = MathTex(r"\theta").move_to([1.1, 0.7, 0]).shift(shift)
 
         circumference = MathTex(r"C=2\pi r").move_to([-0.5, 2, 0]).shift(shift)
-
         arc_length = MathTex(r"s=\frac{\theta}{2\pi}\cdot 2\pi r").move_to([1.5,-1.7, 0]).shift(shift)
 
         slash = Line([2.7, 0.7, 0], [1, 0, 0],
@@ -35,18 +31,15 @@ class SectorScene(Scene):
                   run_time = 0.5)
         
         self.wait(0.8)
-
         self.play(Create(r))
 
         self.play(Create(arc),
                   run_time = 0.3)
 
         self.play(Create(theta))
-
         self.wait(1)
 
         self.play(Create(s))
-
         self.wait(2.3)
 
         self.play(Create(circumference), 
@@ -144,17 +137,13 @@ class CircleScene(Scene):
         circles = []
         colors = [BLUE, GREEN, PINK, YELLOW, ORANGE]
 
-        ang_velocity = PI
-
         for i in range(3):
             circles.append(Circle(radius=i*0.5+0.5, color=colors[i]))
         
         circ_group = VGroup(*circles)
-
         circ_group.arrange(buff = 1)
 
         start = circles[1].point_at_angle(PI/2)
-        end = start+RIGHT*2
 
         theta = ValueTracker(0)
 
@@ -204,7 +193,6 @@ class RobotScene(Scene):
         chassis = Square(side_length=2, fill_color=BLUE_C, fill_opacity=1.0)
 
         modules = []
-
         pos = []
 
         top_left = chassis.get_left()+chassis.get_top()
@@ -350,7 +338,6 @@ class RobotScene(Scene):
                      color = RED).shift(LEFT*0.8+UP*0.1)
         
         slash2 = slash.copy().shift(RIGHT*1.1+DOWN*0.3)
-
         slash3 = slash2.copy().shift(RIGHT)
 
         self.wait(1)
@@ -499,7 +486,6 @@ class OptimizationScene(Scene):
         arc2 = Arc(radius=2, start_angle=PI/3, angle=-105*DEGREES, color=RED)
 
         self.play(Create(circle))
-
         self.play(Create(current_angle))
 
         dashed = DashedLine(circle.point_at_angle(3*PI/4), circle.point_at_angle(-PI/4), dash_length=0.3)
@@ -508,7 +494,6 @@ class OptimizationScene(Scene):
         path_2.set_color(RED)
 
         self.play(Write(start_angle))
-
         self.play(Create(dashed))
 
         self.play(Write(target_angle))
@@ -893,7 +878,6 @@ class CoordinateTransformScene(Scene):
         self.wait(0.7)
 
         self.play(Indicate(clockwise_rotation[0]))
-
         self.wait(0.8)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
@@ -903,7 +887,6 @@ class WPILibMethodScene(Scene):
         box1 = Rectangle(width=3.7, height=1)
 
         fromFieldRel = Text("fromFieldRelativeSpeeds()", font_size=20)
-
         fromFieldRel.move_to(box1)
 
         v_trans = MathTex(r"\begin{bmatrix} v_{xf} \\ v_{yf} \end{bmatrix}", font_size=35)
@@ -913,7 +896,6 @@ class WPILibMethodScene(Scene):
         arrow = Arrow([0, 0, 0], [1.3, 0, 0], color=RED)
 
         arrow2 = arrow.copy()
-
         arrow2.set_color(GREEN)
         
         v_trans.next_to(fromFieldRel, LEFT).shift(LEFT*2.4)
@@ -937,7 +919,6 @@ class WPILibMethodScene(Scene):
         self.wait(2)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
-
         self.play(Create(Text("Up Next...").shift(UP*3)))
 
         box1 = Rectangle(width=4, height=2.4).shift(UP, LEFT*2.8)
@@ -1249,7 +1230,6 @@ class OverviewScene(Scene):
         chassis = Square(side_length=2, fill_color=BLUE, fill_opacity=1.0)
 
         modules = []
-        
         pos = []
         
         top_left = chassis.get_left()+chassis.get_top()
@@ -1335,3 +1315,23 @@ class ThanksForWatchingScene(Scene):
         self.play(Unwrite(text))
 
         self.wait(1)
+
+class IntroScene(Scene):
+    def construct(self):
+        text = Text("Welcome!", font_size=60).shift(UP*3)
+
+        self.play(Create(text))
+
+        self.wait(7)
+
+class InThisVideoScene(Scene):
+    def construct(self):
+        text = Text("In this video...", font_size=55).shift(UP*3)
+
+        box1 = Rectangle(width=5, height=3).shift(LEFT*3)
+        box2 = Rectangle(width=5, height=3).shift(RIGHT*3)
+
+        self.play(Create(text), Create(box1))
+        self.play(Create(box2))
+
+        self.wait(5)
