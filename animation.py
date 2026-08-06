@@ -76,7 +76,7 @@ class SectorScene(Scene):
         self.wait(0.5)
         self.play(arc_length.animate.shift(UP*4.5).scale(1.7).shift(LEFT*0.2))
 
-        v = MathTex("v", font_size = 70).move_to([arc_length.get_center()]).shift(DOWN*2, LEFT*1.7)
+        v = MathTex("v", font_size = 70, color=YELLOW).move_to([arc_length.get_center()]).shift(DOWN*2, LEFT*1.7)
 
         self.play(Create(v))
 
@@ -84,7 +84,7 @@ class SectorScene(Scene):
 
         self.play(Create(arr))
 
-        om = MathTex(r"\omega", font_size = 70).move_to([arc_length.get_center()]).shift(DOWN*2, RIGHT*1.2)
+        om = MathTex(r"\omega", font_size = 70, color=GREEN_C).move_to([arc_length.get_center()]).shift(DOWN*2, RIGHT*1.2)
         
         self.play(Create(om))
         
@@ -102,7 +102,10 @@ class SectorScene(Scene):
 
         self.wait(1)
 
-        arc_length2 = MathTex(r"\frac{ds}{dt}=r\frac{d\theta}{dt}", font_size = 65)
+        arc_length2 = MathTex(r"\frac{ds}{dt}", "=r", r"\frac{d\theta}{dt}", font_size = 65)
+
+        arc_length2[0].set_color(LIGHT_PINK)
+        arc_length2[2].set_color(BLUE_B)
 
         arc_length2.move_to([arc_length.get_center()]).shift(LEFT*0.2)
 
@@ -115,10 +118,20 @@ class SectorScene(Scene):
         
         self.wait(2)
 
-        rw = MathTex(r"v=r\omega", font_size = 65).move_to(arc_length2.get_center())
+        rw = MathTex(r"v", r"=r", r"\omega", font_size = 65).move_to(arc_length2.get_center())
 
-        w = MathTex(r"\omega=\frac{d\theta}{dt}")
-        lin = MathTex(r"v=\frac{ds}{dt}")
+        rw[0].set_color(YELLOW)
+        rw[2].set_color(GREEN)
+
+        w = MathTex(r"\omega", r"=", r"\frac{d\theta}{dt}")
+
+        w[0].set_color(GREEN)
+        w[2].set_color(LIGHT_PINK)
+
+        lin = MathTex(r"v", r"=", r"\frac{ds}{dt}")
+
+        lin[0].set_color(YELLOW)
+        lin[2].set_color(BLUE_B)
         
         self.play(Uncreate(arc_length, run_time = 0.5))
         self.play(Create(rw))
@@ -205,7 +218,9 @@ class RobotScene(Scene):
         pos.append(bottom_left)
         pos.append(bottom_right)
 
-        romega = MathTex(r"||v||=||r||\omega", font_size=50).shift(UP*2.5)
+        romega = MathTex(r"||v||", "=", "||r||", r"\omega", font_size=50).shift(UP*2.5)
+        romega[0].set_color(YELLOW)
+        romega[3].set_color(GREEN)
 
         dir = MathTex("direction", "=", r"\ ?", font_size=50).shift(DOWN*2)
 
@@ -356,7 +371,7 @@ class RobotScene(Scene):
 
         self.wait(1)
 
-        v_rot = MathTex(r"v_{rot}=\left\langle -\omega r_y, \omega r_x \right\rangle", font_size=40).move_to(romega).shift(RIGHT*0.8)
+        v_rot = MathTex(r"v_{rot}=\left\langle -\omega r_y, \omega r_x \right\rangle", font_size=40, color=ORANGE).move_to(romega).shift(RIGHT*0.8)
 
         self.play(FadeOut(romega), Transform(r_ortho[2], v_rot), ScaleInPlace(vec_copy, 2.0))
 
@@ -388,8 +403,18 @@ class RobotScene(Scene):
         
         self.play(Create(v_overall), Write(v_overall_label), modules[0].animate.rotate(-PI/3.38))
 
-        v_overall_eq = MathTex(r"v_{overall}=v_{trans}+v_{rot}=\left\langle v_{xr},v_{yr} \right\rangle+\left\langle -\omega r_y,\omega r_x \right\rangle=\left\langle v_{xr}-\omega r_y,v_{yr}+\omega r_x \right\rangle",
+        v_overall_eq = MathTex(r"v_{overall}", "=", r"v_{trans}", "+", r"v_{rot}", "=", r"\left\langle v_{xr},v_{yr} \right\rangle", "+", r"\left\langle -\omega r_y,\omega r_x \right\rangle", r"=\left\langle",  "v_{xr}", "-", r"\omega r_y", ",", "v_{yr}", "+", r"\omega r_x",  r"\right\rangle",
                             font_size=35)
+
+        v_overall_eq[0].set_color(GREEN)
+        v_overall_eq[2].set_color(YELLOW)
+        v_overall_eq[4].set_color(ORANGE)
+        v_overall_eq[6].set_color(YELLOW)
+        v_overall_eq[8].set_color(ORANGE)
+        v_overall_eq[10].set_color(YELLOW)
+        v_overall_eq[12].set_color(ORANGE)
+        v_overall_eq[14].set_color(YELLOW)
+        v_overall_eq[16].set_color(ORANGE)
 
         v_overall_eq.shift(DOWN*2.4)
 
@@ -402,7 +427,7 @@ class RobotScene(Scene):
 class ModuleStatesScene(Scene):
 
     def construct(self):
-        chassis_speeds = MathTex(r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
+        chassis_speeds = MathTex(r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", color=YELLOW, font_size=40)
 
         chassis_speeds_label = MathTex(r"Chassis \ Speeds", font_size=40)
         robot_relative = MathTex("(Robot-relative)", font_size=20)
@@ -415,7 +440,7 @@ class ModuleStatesScene(Scene):
 
         arrow2 = arrow.copy().next_to(rec)
 
-        v_overall = MathTex(r"\begin{bmatrix} v_{xr}-\omega r_y \\ v_{yr}+\omega r_x \end{bmatrix}", font_size=40).next_to(arrow2)
+        v_overall = MathTex(r"\begin{bmatrix} v_{xr}-\omega r_y \\ v_{yr}+\omega r_x \end{bmatrix}", color=GREEN, font_size=40).next_to(arrow2)
         v_overall_label = MathTex(r"v_{overall}", font_size=40)
 
         method_label = MathTex("toSwerveModuleStates()", font_size=25).shift(LEFT*0.5)
@@ -447,7 +472,12 @@ class ModuleStatesScene(Scene):
 
 class MatrixScene(Scene):
     def construct(self):
-        states_matrix = MathTex(r"v_{overall}= \begin{bmatrix} v_{xr}-\omega r_y\\ v_{yr}+\omega r_x\end{bmatrix}=", r"\begin{bmatrix} 1 & 0 & -r_y \\ 0 & 1 & r_x \end{bmatrix}", r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
+        states_matrix = MathTex(r"v_{overall}", r"=",  r"\begin{bmatrix} v_{xr}-\omega r_y\\ v_{yr}+\omega r_x\end{bmatrix}", "=", r"\begin{bmatrix} 1 & 0 & -r_y \\ 0 & 1 & r_x \end{bmatrix}", r"\begin{bmatrix} v_x \\ v_y \\ \omega \end{bmatrix}", font_size=40)
+
+        states_matrix[0].set_color(GREEN)
+        states_matrix[2].set_color(GREEN)
+        states_matrix[4].set_color(BLUE_B)
+        states_matrix[5].set_color(YELLOW)
 
         states_matrix.shift(UP*1.5)
         method_label = MathTex("toSwerveModuleStates()", font_size=40)
@@ -457,7 +487,7 @@ class MatrixScene(Scene):
         arrow = Arrow(start=[0, 3, 0], end=[0, 1.5, 0]).next_to(states_matrix, DOWN)
         
         self.play(Write(states_matrix), run_time=3.6)
-        self.play(Indicate(states_matrix[1]))
+        self.play(Indicate(states_matrix[4]))
 
         self.wait(0.5)
 
@@ -859,11 +889,15 @@ class CoordinateTransformScene(Scene):
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
 
-        clockwise_rotation = MathTex(r"\begin{bmatrix} v_{xr} \\ v_{yr} \end{bmatrix}", r"=\begin{bmatrix} \cos(\theta_R) &  \sin(\theta_R)\\ -\sin(\theta_R) & \sin(\theta_R) \end{bmatrix} \begin{bmatrix} v_{xf} \\ v_{xr} \end{bmatrix}")
+        clockwise_rotation = MathTex(r"\begin{bmatrix} v_{xr} \\ v_{yr} \end{bmatrix}", r"=", r"\begin{bmatrix} \cos(\theta_R) &  \sin(\theta_R)\\ -\sin(\theta_R) & \sin(\theta_R) \end{bmatrix}",  r"\begin{bmatrix} v_{xf} \\ v_{xr} \end{bmatrix}")
 
         text = Text("This will be later referenced as", font_size=30)
 
-        v_trans = MathTex(r"v_{trans}=\left\langle v_{xr}, v_{yr} \right\rangle", font_size=35)
+        clockwise_rotation[0].set_color(YELLOW)
+        clockwise_rotation[2].set_color(BLUE)       
+        clockwise_rotation[3].set_color(LIGHT_PINK)
+
+        v_trans = MathTex(r"v_{trans}=\left\langle v_{xr}, v_{yr} \right\rangle", font_size=35, color=YELLOW)
 
         text.shift(DOWN*2, LEFT*1.5)
 
@@ -877,7 +911,7 @@ class CoordinateTransformScene(Scene):
 
         self.wait(0.7)
 
-        self.play(Indicate(clockwise_rotation[0]))
+        self.play(Indicate(clockwise_rotation[0], color=ORANGE))
         self.wait(0.8)
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
@@ -1335,3 +1369,71 @@ class InThisVideoScene(Scene):
         self.play(Create(box2))
 
         self.wait(5)
+
+class Thumbnail(Scene):
+    def construct(self):
+        chassis = Square(side_length=2, fill_color=BLUE_C, fill_opacity=1.0)
+
+        modules = []
+        pos = []
+
+        top_left = chassis.get_left()+chassis.get_top()
+        top_right = chassis.get_right()+chassis.get_top()
+        bottom_left = chassis.get_left()+chassis.get_bottom()
+        bottom_right = chassis.get_right()+chassis.get_bottom()
+
+        pos.append(top_right)
+        pos.append(top_left)
+        pos.append(bottom_left)
+        pos.append(bottom_right)
+
+        for i in range(len(pos)):
+            mod = Rectangle(width=0.2, height=0.5, fill_color=GRAY, fill_opacity=1.0).move_to(pos[i])
+        
+            modules.append(mod)
+
+        for i in range(len(pos)):
+            if i%2==0:
+                modules[i].rotate(PI/4)
+            else:
+                modules[i].rotate(-PI/4)
+
+        title = MathTex(
+            r"\mathbf{\text{The Mathematics}}"
+        ).scale(3).to_edge(UP)
+
+        title2 = MathTex(
+            r"\mathbf{\text{Behind Swerve}}"
+        ).scale(2.5).to_edge(DOWN).shift(UP*0.4)
+
+        title2.set_color_by_tex("Swerve", TEAL)
+
+        arrow = Arrow(chassis.get_center(), chassis.get_center()+UP*1.8, color=ORANGE, buff=0)
+
+        robot = VGroup(chassis, *modules, Dot(chassis.get_center(), radius=0.05, color=BLACK)).scale(1.3)
+
+        plane = NumberPlane(
+            x_range=[-8, 8, 1],
+            y_range=[-4.5, 4.5, 1],
+            background_line_style={
+                "stroke_color": TEAL_E,
+                "stroke_width": 1,
+                "stroke_opacity": 0.25
+            },
+            axis_config={"stroke_opacity": 0}
+        )
+
+        robot.rotate(PI/12)
+        arrow.rotate(PI/12)
+
+        robot.shift(UP*0.2)
+        arrow.shift(LEFT*0.24, UP*0.2)
+
+        self.add(plane)
+
+        self.add(title)
+        self.add(title2)
+
+        self.add(robot)
+
+        self.add(arrow)
